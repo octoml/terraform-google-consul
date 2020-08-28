@@ -66,7 +66,14 @@ module "consul_servers" {
   # WARNING! This update strategy will delete and re-create the entire Consul cluster when making some changes to this
   # module. Unfortunately, Google and Terraform do not yet support an automatic stable way of performing a rolling update.
   # For now for production usage, set this to "NONE", and manually coordinate your Consul Server upgrades per Consul docs.
-  instance_group_update_strategy = "NONE"
+  instance_group_update_strategy = {
+    type                         = "OPPORTUNISTIC"
+    instance_redistribution_type = "PROACTIVE"
+    minimal_action               = "RESTART"
+    max_surge_fixed              = 20
+    max_unavailable_fixed        = 2
+    min_ready_sec                = 50
+  }
 }
 
 # Render the Startup Script that will run on each Consul Server Instance on boot.
